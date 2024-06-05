@@ -527,6 +527,7 @@ pub enum BatchRequestError {
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub enum BatchRequestMode {
     Sequence,
     Concurrent,
@@ -534,18 +535,18 @@ pub enum BatchRequestMode {
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub struct BatchRequest {
-    pub batch: Vec<Request>,
     pub mode: BatchRequestMode,
+    pub requests: Vec<Request>,
 }
 
 impl BatchRequest {}
 
 impl ServiceRequest for BatchRequest {
     type Error = BatchRequestError;
-    type Response = Vec<Vec<Response>>;
+    type Response = Vec<Response>;
 
     fn validate(&self) -> Result<(), PayloadError> {
-        for req in &self.batch {
+        for req in &self.requests {
             req.validate()?;
         }
 
